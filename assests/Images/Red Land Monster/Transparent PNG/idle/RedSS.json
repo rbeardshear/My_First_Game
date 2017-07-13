@@ -1,0 +1,28 @@
+{"frames": [
+
+{
+	"filename": "frame-1.png",
+	"frame": {"x":0,"y":0,"w":827,"h":905},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":827,"h":905},
+	"sourceSize": {"w":827,"h":905}
+},
+{
+	"filename": "frame-2.png",
+	"frame": {"x":827,"y":0,"w":827,"h":905},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":827,"h":905},
+	"sourceSize": {"w":827,"h":905}
+}],
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "RedSS.png",
+	"format": "RGBA8888",
+	"size": {"w":1654,"h":905},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:782eb101f89f3fe541d1912e1738c36a:fd51d478ba71801ac9c5e802970cd1ca:c25dbe30a93cfdbf669db2bb3ff39a35$"
+}
+}

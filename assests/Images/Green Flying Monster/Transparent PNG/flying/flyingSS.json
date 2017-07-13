@@ -1,0 +1,44 @@
+{"frames": [
+
+{
+	"filename": "frame-1.png",
+	"frame": {"x":0,"y":0,"w":1125,"h":874},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1125,"h":874},
+	"sourceSize": {"w":1125,"h":874}
+},
+{
+	"filename": "frame-2.png",
+	"frame": {"x":1125,"y":0,"w":1125,"h":874},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1125,"h":874},
+	"sourceSize": {"w":1125,"h":874}
+},
+{
+	"filename": "frame-3.png",
+	"frame": {"x":0,"y":874,"w":1125,"h":874},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1125,"h":874},
+	"sourceSize": {"w":1125,"h":874}
+},
+{
+	"filename": "frame-4.png",
+	"frame": {"x":1125,"y":874,"w":1125,"h":874},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1125,"h":874},
+	"sourceSize": {"w":1125,"h":874}
+}],
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "flyingSS.png",
+	"format": "RGBA8888",
+	"size": {"w":2250,"h":1748},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:dde8b4367cda92f0a0c111f01e07433f:678c4d444c180cc2827e5505aab01112:9e797083d24283490a8f6280f4d5ebda$"
+}
+}

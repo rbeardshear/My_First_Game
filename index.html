@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script type="text/javascript" src="js/phaser.min.js"></script>
+  <title>Document</title>
+  <style>
+    body {
+      padding: 0px;
+      margin: 0px;
+      background: green;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <script type='text/javascript'>
+      // Create the Game
+      var HeroQuest = HeroQuest || {}; HeroQuest = new Phaser.Game(928, 608, Phaser.AUTO, 'HeroQuest', {
+        preload: preload, create: create, update: update
+      });
+      function preload() {
+        // Load TileMap
+        HeroQuest.load.tilemap('world', "assests/tilemaps/mapWorld.json", null, Phaser.Tilemap.TILED_JSON);
+        HeroQuest.load.image('tiles1', 'assests/Tiles/hyptosis_tile-art-batch-1.png', 960, 960);
+        // Load background image
+        HeroQuest.load.image('background', "assests/Images/mapWorld.png", );
+        // Load collison images
+        HeroQuest.load.image('wall', "assests/Images/platform.png", );
+        HeroQuest.load.image('wall1', "assests/Images/vertplatform.png", );
+        // Load Finish box
+        HeroQuest.load.image('end', "assests/Images/endGameIcon.png", );
+        // Load Music
+        HeroQuest.load.audio('jam', 'assests/Music/Questing.wav');
+        // Load Text bubble
+        HeroQuest.load.spritesheet('bubble', 'assests/Images/Bubble.png', 1395, 270, 117);
+        // Load all Sprites
+        HeroQuest.load.spritesheet('dude', 'assests/Images/Hero.png', 64, 64, 36);
+        HeroQuest.load.spritesheet('coin', 'assests/Images/coin.png', 32, 32, 8);
+        HeroQuest.load.atlasJSONHash('badguy1', 'assests/Images/Blue Land Monster/Transparent PNG/Idle/SS.png', 'assests/Images/Blue Land Monster/Transparent PNG/Idle/BlueMonsterSS.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
+        HeroQuest.load.atlasJSONHash('badguy2', 'assests/Images/Green Flying Monster/Transparent PNG/flying/flyingSS.png', 'assests/Images/Green Flying Monster/Transparent PNG/flying/flyingSS.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
+        HeroQuest.load.atlasJSONHash('badguy3', 'assests/Images/Red Land Monster/Transparent PNG/Idle/RedSS.png', 'assests/Images/Red Land Monster/Transparent PNG/Idle/RedSS.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
+      }
+      // Declaring alot of things
+      var map;
+      var layer;
+      var player;
+      var coin;
+      var coins;
+      var scoreText;
+      var music;
+      var badguy;
+      var badguys;
+      var score = 0;
+      var health = 51;
+      var walls;
+      var end
+      var startTips
+      var tips;
+      var bubble;
+      function create() {
+        // start physics
+        HeroQuest.physics.startSystem(Phaser.Physics.ARCADE);
+        // Load Tilemap
+        map = HeroQuest.add.tilemap('world');
+        map.addTilesetImage('Set1', 'tiles1');
+
+        // music = HeroQuest.add.audio('jam')
+        // music.loop = true;
+        // music.play();
+
+        //Build the Walls!
+        walls = HeroQuest.add.group();
+        walls.enableBody = true;
+        // All the Walls, well bushes
+        var bush1 = walls.create(1.67, 430, 'wall')
+        bush1.scale.setTo(1.85, 1)
+        bush1.body.immovable = true;
+        var bush2 = walls.create(320, 294, 'wall1')
+        bush2.scale.setTo(.6, 1.3)
+        bush2.body.immovable = true;
+        var bush3 = walls.create(485, 65, 'wall1')
+        bush3.scale.setTo(.6, 2.5)
+        bush3.body.immovable = true;
+        var bush4 = walls.create(-15, 67, 'wall')
+        bush4.scale.setTo(.1, .5)
+        bush4.body.immovable = true;
+        var bush5 = walls.create(108, 65, 'wall')
+        bush5.scale.setTo(2.2, .5)
+        bush5.body.immovable = true;
+        var bush6 = walls.create(100, 65, 'wall1')
+        bush6.scale.setTo(1, 2.8)
+        bush6.body.immovable = true;
+        var bush7 = walls.create(726, 65, 'wall1')
+        bush7.scale.setTo(1, 1)
+        bush7.body.immovable = true;
+        var bush8 = walls.create(736, 299, 'wall1')
+        bush8.scale.setTo(.4, 1.5)
+        bush8.body.immovable = true;
+        var bush9 = walls.create(882, 429, 'wall')
+        bush9.scale.setTo(1.85, 1)
+        bush9.body.immovable = true;
+        // Background Layer
+        map.createLayer('ground').resizeWorld();
+        // End Box
+        end = HeroQuest.add.sprite(-15, 55, 'end')
+        end.scale.setTo(.4)
+        HeroQuest.physics.arcade.enable(end);
+        end.enableBody = true;
+        end.body.setSize(250, 50);
+        // detects when to remove tips
+        tips = HeroQuest.add.sprite(810, 435, 'wall')
+        tips.anchor.setTo(.5)
+        tips.scale.setTo(.2, 1)
+        HeroQuest.physics.arcade.enable(tips)
+        // detects to play tips animation
+        startTips = HeroQuest.add.sprite(100, 535, 'wall1')
+        startTips.alpha = 0;
+        startTips.anchor.setTo(.5)
+        startTips.scale.setTo(1, 1)
+        HeroQuest.physics.arcade.enable(startTips)
+        //Collision Layer
+        map.createLayer('Terrain').resizeWorld();
+        //BadGuy Group
+        badguys = HeroQuest.add.group();
+        badguys.enableBody = true;
+        // Blue Guys
+        badguy = badguys.create(400, 370, 'badguy1');
+        badguy.scale.setTo(0.09, 0.09)
+        badguy.animations.add('idle', Phaser.Animation.generateFrameNames['badguy/idle/', 1, 2], 3, true);
+        badguy.animations.play('idle')
+        badguy = badguys.create(650, 370, 'badguy1');
+        badguy.scale.setTo(0.09, 0.09)
+        badguy.animations.add('idle', Phaser.Animation.generateFrameNames['badguy/idle/', 1, 2], 3, true);
+        badguy.animations.play('idle')
+        badguy = badguys.create(600, 160, 'badguy1');
+        badguy.scale.setTo(0.09, 0.09)
+        badguy.animations.add('idle', Phaser.Animation.generateFrameNames['badguy/idle/', 1, 2], 3, true);
+        badguy.animations.play('idle')
+        // Green Guys
+        badguy = badguys.create(145, 95, 'badguy2');
+        badguy.scale.setTo(0.05, 0.05)
+        badguy.animations.add('idle', Phaser.Animation.generateFrameNames['badguy/idle/', 1, 2, 3, 4], 12, true);
+        badguy.animations.play('idle')
+        badguy = badguys.create(760, 95, 'badguy2');
+        badguy.scale.setTo(0.05, 0.05)
+        badguy.animations.add('idle', Phaser.Animation.generateFrameNames['badguy/idle/', 1, 2, 3, 4], 12, true);
+        badguy.animations.play('idle')
+        badguy = badguys.create(0, 370, 'badguy2');
+        badguy.scale.setTo(0.05, 0.05)
+        badguy.animations.add('idle', Phaser.Animation.generateFrameNames['badguy/idle/', 1, 2, 3, 4], 12, true);
+        badguy.animations.play('idle')
+        // Red Guys
+        badguy = badguys.create(280, 375, 'badguy3');
+        badguy.scale.setTo(0.05, 0.05)
+        badguy.animations.add('idle', Phaser.Animation.generateFrameNames['badguy/idle/', 1, 2], 4, true);
+        badguy.animations.play('idle')
+        badguy = badguys.create(30, 130, 'badguy3');
+        badguy.scale.setTo(0.05, 0.05)
+        badguy.animations.add('idle', Phaser.Animation.generateFrameNames['badguy/idle/', 1, 2], 4, true);
+        badguy.animations.play('idle')
+        badguy = badguys.create(360, 195, 'badguy3');
+        badguy.scale.setTo(0.05, 0.05)
+        badguy.animations.add('idle', Phaser.Animation.generateFrameNames['badguy/idle/', 1, 2], 4, true);
+        badguy.animations.play('idle')
+        //Player
+        player = HeroQuest.add.sprite(0, 535, 'dude');
+        HeroQuest.physics.arcade.enable(player);
+        player.anchor.setTo(0.5, 0.5)
+        player.body.setSize(32, 40);
+        player.body.collideWorldBounds = true;
+        player.animations.add('left', [9, 10, 11, 12, 13, 14, 15, 16, 17], 10, true);
+        player.animations.add('right', [28, 29, 30, 31, 32, 33, 34, 35, 36], 10, true);
+        player.animations.add('up', [0, 1, 2, 3, 4, 5, 6, 7, 8], 10, true);
+        player.animations.add('down', [18, 19, 20, 21, 22, 23, 24, 25], 10, true);
+        //coins Group
+        coins = HeroQuest.add.group();
+        coins.enableBody = true;
+        // Coins
+        coin = coins.create(860, 110, 'coin');
+        coin.animations.add('idle', [1, 2, 3, 4, 5, 6, 7, 8], 16, true);
+        coin.animations.play('idle');
+        coin = coins.create(40, 90, 'coin');
+        coin.animations.add('idle', [1, 2, 3, 4, 5, 6, 7, 8], 16, true);
+        coin.animations.play('idle');
+        coin = coins.create(40, 190, 'coin');
+        coin.animations.add('idle', [1, 2, 3, 4, 5, 6, 7, 8], 12, true);
+        coin.animations.play('idle');
+        coin = coins.create(540, 190, 'coin');
+        coin.animations.add('idle', [1, 2, 3, 4, 5, 6, 7, 8], 14, true);
+        coin.animations.play('idle');
+        coin = coins.create(720, 240, 'coin');
+        coin.animations.add('idle', [1, 2, 3, 4, 5, 6, 7, 8], 12, true);
+        coin.animations.play('idle');
+        coin = coins.create(40, 290, 'coin');
+        coin.animations.add('idle', [1, 2, 3, 4, 5, 6, 7, 8], 15, true);
+        coin.animations.play('idle');
+        coin = coins.create(440, 340, 'coin');
+        coin.animations.add('idle', [1, 2, 3, 4, 5, 6, 7, 8], 13, true);
+        coin.animations.play('idle');
+        coin = coins.create(40, 390, 'coin');
+        coin.animations.add('idle', [1, 2, 3, 4, 5, 6, 7, 8], 14, true);
+        coin.animations.play('idle');
+        coin = coins.create(160, 390, 'coin');
+        coin.animations.add('idle', [1, 2, 3, 4, 5, 6, 7, 8], 15, true);
+        coin.animations.play('idle');
+        coin = coins.create(210, 320, 'coin');
+        coin.animations.add('idle', [1, 2, 3, 4, 5, 6, 7, 8], 16, true);
+        coin.animations.play('idle');
+        coin = coins.create(180, 220, 'coin');
+        coin.animations.add('idle', [1, 2, 3, 4, 5, 6, 7, 8], 12, true);
+        coin.animations.play('idle');
+        coin = coins.create(280, 170, 'coin');
+        coin.animations.add('idle', [1, 2, 3, 4, 5, 6, 7, 8], 14, true);
+        coin.animations.play('idle');
+        // Game-Text
+        scoreText = HeroQuest.add.text(16, 16, 'Score: ' + score, { fontSize: '32px', fill: 'white' });
+        healthText = HeroQuest.add.text(785, 16, 'Health: ' + (health - 1), { fontSize: '32px', fill: 'red' });
+        // Tips bubble
+        bubble = HeroQuest.add.sprite(450, 50, 'bubble');
+        bubble.animations.add('type');
+        bubble.anchor.setTo(.5);
+        bubble.scale.setTo(.4);
+      }
+      function update() {
+        // listen for controlles
+        var cursors = HeroQuest.input.keyboard.createCursorKeys();
+        // Check for collision
+        HeroQuest.physics.arcade.overlap(player, coins, collectCoin, null, this);
+        HeroQuest.physics.arcade.collide(player, walls);
+        HeroQuest.physics.arcade.overlap(player, badguys, killBadguy, null, this);
+        HeroQuest.physics.arcade.overlap(player, end, YouWin, null, this);
+        HeroQuest.physics.arcade.overlap(player, tips, killTips, null, this);
+        HeroQuest.physics.arcade.overlap(player, startTips, showTips, null, this);
+        // stop player from moving when not being controlled
+        player.body.velocity.x = 0;
+        player.body.velocity.y = 0;
+        // Player Controlles
+        if (cursors.left.isDown) {
+          //  Move to the left
+          player.body.velocity.x = -100;
+          player.animations.play('left');
+        }
+        else if (cursors.right.isDown) {
+          //  Move to the right
+          player.body.velocity.x = 100;
+          player.animations.play('right');
+        }
+        else if (cursors.up.isDown) {
+          //  Move to the right
+          player.body.velocity.y = -100;
+          player.animations.play('up');
+        }
+        else if (cursors.down.isDown) {
+          //  Move to the right
+          player.body.velocity.y = 100;
+          player.animations.play('down');
+        }
+        else {
+          //  Stand still
+          player.animations.stop();
+          player.frame = 19;
+        }
+        // Pick up star
+        function collectCoin(player, coin) {
+          coin.kill();
+          score += 10;
+          scoreText.text = 'Score: ' + score;
+        }
+        // Kill Bad Guy
+        function killBadguy(player, badguy) {
+          badguy.kill();
+          health -= 10;
+          healthText.text = 'Health: ' + (health - 1);
+          score -= 10;
+          scoreText.text = 'Score: ' + score;
+          if (health == 1) {
+            healthText.text = 'Health: ' + health;
+          }
+          if (health < 1) {
+            player.kill();
+            alert('You Died! GameOver!');
+            alert('Score:' + score);
+            alert('Refresh Page to Replay!');
+          }
+        };
+        // Reach End
+        function YouWin(player, end) {
+          console.log('Test')
+          player.x = -15;
+          player.y = 0;
+          alert('You Win!! Score: ' + score);
+          alert('Refresh Page to Replay!');
+        };
+        // Show tips bubble
+        function showTips(player, startTips) {
+          startTips.kill();
+          bubble.animations.play('type', 16, false);
+        };
+        // kill tips bubble
+        function killTips(player, tips) {
+          tips.kill();
+          bubble.kill();
+        }
+      };
+    </script>
+  </div>
+</body>
+</html>
